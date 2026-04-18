@@ -93,41 +93,26 @@ module pmem(
   output logic [17:0] data_out
 );
 
-logic [17:0] mem[0:`ADDR_WIDTH'h3fff];
-
-always @(posedge clk) begin
-  if (ce & wre) begin
-    mem[addr] <= data_in;
-  end
-end
-
-always @(posedge rst, posedge clk) begin
-  if (rst) begin
-    data_out <= 18'd0;
-  end
-  else if (ce & ~wre)
-    data_out <= mem[addr];
-end
 
 //initial begin
 //  $readmemh("./ipl.pmem.hex", mem, 0);
 //end
 
-//SPX9 #(
-//  .READ_MODE(1'b0),
-//  .WRITE_MODE(2'b00),
-//  .BIT_WIDTH(18),
-//  .RESET_MODE("ASYNC")
-//) mem_data_lo (
-//  .DO(data_out),
-//  .DI(data_in),
-//  .AD(assr),
-//  .WRE(1'b1),
-//  .CE(1'b1),
-//  .CLK(clk),
-//  .RESET(rst),
-//  .OCE(1'b0),
-//  .BLKSEL(3'd0)
-//);
+SPX9 #(
+  .READ_MODE(1'b0),
+  .WRITE_MODE(2'b00),
+  .BIT_WIDTH(18),
+  .RESET_MODE("ASYNC")
+) mem_data_lo (
+  .DO(data_out),
+  .DI(data_in),
+  .AD(assr),
+  .WRE(1'b1),
+  .CE(ce),
+  .CLK(clk),
+  .RESET(rst),
+  .OCE(1'b0),
+  .BLKSEL(3'd0)
+);
 
 endmodule
