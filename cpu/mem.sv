@@ -93,26 +93,22 @@ module pmem(
   output logic [17:0] data_out
 );
 
+reg [17:0] mem [`ADDR_WIDTH'h3fff:0];
+
+// based on SUG550-2.3J
+always@(posedge clk or posedge rst)
+if(rst)
+ data_out <= 0;
+else
+ if(ce & !wre)
+ data_out <= mem[addr];
+always @(posedge clk)
+ if (ce & wre)
+ mem[addr] <= data_in;
+
 
 //initial begin
 //  $readmemh("./ipl.pmem.hex", mem, 0);
 //end
-
-SPX9 #(
-  .READ_MODE(1'b0),
-  .WRITE_MODE(2'b00),
-  .BIT_WIDTH(18),
-  .RESET_MODE("ASYNC")
-) mem_data_lo (
-  .DO(data_out),
-  .DI(data_in),
-  .AD(assr),
-  .WRE(1'b1),
-  .CE(ce),
-  .CLK(clk),
-  .RESET(rst),
-  .OCE(1'b0),
-  .BLKSEL(3'd0)
-);
 
 endmodule
