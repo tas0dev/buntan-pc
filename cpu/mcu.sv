@@ -140,8 +140,10 @@ pmem pmem(
   .rst(rst),
   .clk(clk),
   .addr(pmem_addr),
-  .wenh(pmem_wenh),
-  .wenl(pmem_wenl),
+  //.wenh(pmem_wenh),
+  //.wenl(pmem_wenl),
+  .wre(pmem_wenh),
+  .ce(1'b1),
   .data_in(pmem_wdata),
   .data_out(cpu_pmem_rdata)
 );

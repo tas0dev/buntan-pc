@@ -82,31 +82,22 @@ end
 endmodule
 
 
+
 // program memory
 module pmem(
   input rst,
   input clk,
   input [`ADDR_WIDTH-1:0] addr,
-  input wenh, wenl,
+  input wre, ce,
   input [17:0] data_in,
   output logic [17:0] data_out
 );
 
 logic [17:0] mem[0:`ADDR_WIDTH'h3fff];
 
-always @(posedge rst, posedge clk) begin
-  if (rst) begin
-  end
-  else begin
-    /*
-    if (wenh)
-      mem[addr][17:16] <= data_in[17:16];
-    if (wenl)
-      mem[addr][15:0] <= data_in[15:0];
-    */
+always @(posedge clk) begin
+  if (ce & wre) begin
     mem[addr] <= data_in;
-    //mem[addr] <= (data_in & (({2{wenh}} << 16) | {16{wenl}})) |
-    //  (mem[addr] & ~(({2{wenh}} << 16) | {16{wenl}}));
   end
 end
 
@@ -114,12 +105,29 @@ always @(posedge rst, posedge clk) begin
   if (rst) begin
     data_out <= 18'd0;
   end
-  else
+  else if (ce & ~wre)
     data_out <= mem[addr];
 end
 
-initial begin
-  $readmemh("./ipl.pmem.hex", mem, 0);
-end
+//initial begin
+//  $readmemh("./ipl.pmem.hex", mem, 0);
+//end
+
+//SPX9 #(
+//  .READ_MODE(1'b0),
+//  .WRITE_MODE(2'b00),
+//  .BIT_WIDTH(18),
+//  .RESET_MODE("ASYNC")
+//) mem_data_lo (
+//  .DO(data_out),
+//  .DI(data_in),
+//  .AD(assr),
+//  .WRE(1'b1),
+//  .CE(1'b1),
+//  .CLK(clk),
+//  .RESET(rst),
+//  .OCE(1'b0),
+//  .BLKSEL(3'd0)
+//);
 
 endmodule
